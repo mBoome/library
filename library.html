@@ -1,0 +1,135 @@
+﻿<html>
+ <head>
+  <meta charset=utf-8">
+  <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+  <title>Библиотека</title>
+  <link rel="stylesheet" href="library.css">
+  </style>
+ </head>
+ <body>
+ <script type="text/javascript">
+
+    var isChanging;
+
+    $(document).ready(function() {
+     localStorage.clear();
+     changeMode("");
+     for (let i = 0, len = localStorage.length; i < len; ++i) {
+      let name = localStorage.key(i);
+      let book = JSON.parse(localStorage.getItem(name));
+      showBook(name, book);
+     }	
+    });
+
+    //функция для переключения режима: сохранение книги или изменение
+    function changeMode(name){
+     isChanging = name;
+     $("#mode").html((isChanging) ? "Режим: изменения книги" : "Режим: добавление книги" );
+    };
+
+    //функция, принимающая данные из формы для обработки
+    function addBook(){
+     let name = $("#name").val();
+     let book = {
+      author: $("#author").val(),
+      date: $("#date").val(),
+      numberPages: $("#numberPages").val()
+     }
+     saveData(name, book);
+     (isChanging) ? changeBook(name, book) : showBook(name, book);
+     changeMode("");
+    };
+
+    //функция, сохраняющая или переписыающая значения книги в localStorage
+    function saveData(name, book){     
+     if (isChanging){
+      localStorage.removeItem(isChanging);
+     }
+     let serialBook = JSON.stringify(book);
+     localStorage.setItem(name, serialBook);
+    };
+
+    //функция отображения информации по книги
+    function showBook(name, book){          
+     let divBook = `<div id="${name}" class="book"></div>`;
+     $('#menu').append(divBook);
+     let strName = `<p id="${name}Id">${name}</p>`;
+     $(`#${name}`).append(strName);
+     let strAuthor = `<p id="${name}AuthorId">Автор: ${book.author}</p></div>`;
+     $(`#${name}`).append(strAuthor);
+     let strEditButton = '<button class = "button hiddenButton" onclick="edit(this)">Изменить</button>';
+     $(`#${name}`).append(strEditButton);
+     let strClearButton = '<button class = "button hiddenButton" onclick="showPopup(this)">Удалить</button>';
+     $(`#${name}`).append(strClearButton);
+    };
+
+    //функция, изменяющая информацию в отображении книги
+    function changeBook(name, book){          
+     $(`#${isChanging}Id`).html(name);
+     $(`#${isChanging}AuthorId`).html(`Автор: ${book.author}`);
+     $(`#${isChanging}Id`).attr(`id${name}Id`);
+     $(`#${isChanging}AuthorId`).attr(`id${name}AuthorId`);
+     $(`#${isChanging}`).attr("id", name);
+    };
+
+    //функция, начинаю0ая обрабатывать запрос об изменение книги
+    function edit(o){
+     let name = $(o).parent().attr("id");
+     let book = JSON.parse(localStorage.getItem(name));
+     changeMode(name);
+     $("#name").val(name);
+     $("#author").val(book.author);
+     $("#date").val(book.date);
+     $("#numberPages").val(book.numberPages);
+    };
+
+    //показать popup
+    function showPopup(o){
+     if ($("#menuForPopup").length || isChanging){
+     	return;
+     }
+     let darkBackground = '<div id="menuForPopup"></div>';
+     $('body').append(darkBackground);
+     let name = $(o).parent().attr("id");
+     let divDelete = '<div id="del" class="popup"></div>';   	
+     $("#menuForPopup").append(divDelete);
+     let strDelete = '<p>Вы точно хотите удалить книгу?</p>';
+     $('#del').append(strDelete);
+     let strYesButton = `<button class = "button" onclick="deleteBook(this)" value="${name}">Да</button>`;
+     $('#del').append(strYesButton);
+     let strNoButton = '<button class = "button" onclick="deletePopup(this)">Нет</button>';
+     $('#del').append(strNoButton);	
+    }
+
+    //функция удаления книги
+    function deleteBook(o){
+     let name = $(o).attr("value");
+     localStorage.removeItem(name);
+     $(`#${name}`).remove();
+     deletePopup(o);
+    };
+
+    //Убрать popup
+    function deletePopup(o){
+     $(o).parent().remove();
+     $('#menuForPopup').remove();
+    }
+
+  </script>
+  <div id="settings">
+   <form>
+    <p id = "mode"></p>
+    <p>Название</p>
+    <p><input type="text" id="name" required pattern="^[а-яА-ЯёЁa-zA-Z0-9]+$"><span></span></p>
+    <p>Автор</p>
+    <p><input type="text" id="author" required pattern="^[а-яА-ЯёЁa-zA-Z0-9]+$"><span></span></p>
+    <p>Год издания</p>
+    <p><input type="date" id="date" required pattern="(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d"><span></span></p>
+    <p>Кол-во страниц</p>
+    <p><input type="number" id="numberPages" size="5" required pattern="^[0-9]+$"><span></span></p>
+    <p><input type="button" value="Сохранить" onclick="addBook()"></p>
+   </form>
+  </div>
+  <div id="menu"></div>
+ </body>
+</html>

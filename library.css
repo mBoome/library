@@ -1,0 +1,50 @@
+#settings{
+ background:lightblue;
+ width:250px;
+ height:500px;
+ float:left;
+ padding-left:5px;
+ outline:2px solid #000;
+}
+#menu{
+ background:oldlace;
+ width:900px;
+ height:500px;
+ float:left;   
+ padding-left:10px;
+ margin-left:10px;
+}
+#menuForPopup{
+ background:black;
+ position: fixed;
+ width:250px;
+ height:500px;
+ padding-left:5px;
+}
+.book{
+ background:green;
+ width:190px;
+ height:150px;
+ float:left;
+ margin:10px;
+ padding-left: 5px;
+ outline:2px solid #000;
+}
+.button{
+ background:blue;
+ width:70px;
+ height:40px;
+ margin:10px; 
+}
+.popup{
+ background:orange;
+ width:200px;
+ height:150px;
+ margin:0 auto;
+ text-align:center;
+ outline:2px solid #000;
+}
+.hiddenButton{ opacity: 0; }
+.book:hover .hiddenButton{
+ opacity: 1;
+}
